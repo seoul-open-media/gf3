@@ -4,9 +4,9 @@
 /// \details This code is meant to work as a simple example for communicating with
 ///          the RMDX brushless motors. Note that only single-motor commands are implemented.
 #include <stdio.h>
-#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+
 #ifndef MYACTUATOR_RMDX
 #define MYACTUATOR_RMDX
 
