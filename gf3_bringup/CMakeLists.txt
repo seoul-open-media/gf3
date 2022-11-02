@@ -6,20 +6,29 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+# find_package(ament_cmake REQUIRED)
+# find_package(rclcpp REQUIRED)
+# find_package(std_msgs REQUIRED)
 
+# find dependencies
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  ament_cmake
+  rclcpp
+  std_msgs
+  can_msgs
+)
+
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
+#
 add_executable(connect_robot src/connect_robot.cpp)
-ament_target_dependencies(connect_robot rclcpp std_msgs)
+ament_target_dependencies(connect_robot ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
 target_include_directories(connect_robot PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 target_compile_features(connect_robot PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-
 
 install(TARGETS connect_robot
   DESTINATION lib/${PROJECT_NAME})
