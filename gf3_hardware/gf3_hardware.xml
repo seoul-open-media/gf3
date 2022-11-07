@@ -1,0 +1,10 @@
+<library path="gf3_hardware">
+    <class name="gf3_hardware/Gf3HardwareInterface"
+           type="gf3_hardware::Gf3HardwareInterface"
+           base_class_type="hardware_interface::SystemInterface">
+
+        <description>
+            Hardware interface for gf3 Emika research robots
+        </description>
+    </class>
+</library>

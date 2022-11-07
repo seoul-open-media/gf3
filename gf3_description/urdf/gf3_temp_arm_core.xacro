@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot
-  name="gf3">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot">
   <link
     name="base_link">
-    <inertial>
+    <!-- <inertial>
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
@@ -16,7 +15,7 @@
         iyy="0"
         iyz="0"
         izz="0" />
-    </inertial>
+    </inertial> -->
     <visual>
       <origin
         xyz="0 0 0"
@@ -43,7 +42,7 @@
   </link>
   <link
     name="shoulder_1">
-    <inertial>
+    <!-- <inertial>
       <origin
         xyz="0.143483235103531 0.0250123355737991 0.702729587168112"
         rpy="0 0 0" />
@@ -56,7 +55,7 @@
         iyy="0.000161270839111698"
         iyz="9.38593559269322E-12"
         izz="0.000184029805378281" />
-    </inertial>
+    </inertial> -->
     <visual>
       <origin
         xyz="0 0 0"

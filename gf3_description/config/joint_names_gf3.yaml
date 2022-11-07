@@ -1,1 +1,1 @@
-controller_joint_names: ['', 'shoulder_1_shoulder_2', 'shoulder_2_shoulder_3', 'shoulder_3_upper_arm', ]
+controller_joint_names: ['shoulder_1_shoulder_2', 'shoulder_2_shoulder_3', 'shoulder_3_upper_arm', ]
