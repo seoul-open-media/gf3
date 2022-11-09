@@ -1,5 +1,6 @@
 #include "gf3_hardware/gf3_hardware_interface.hpp"
 
+
 #include <chrono>
 #include <cmath>
 #include <limits>
@@ -13,7 +14,7 @@
 
 namespace gf3_hardware
 {
-
+ 
   CallbackReturn Gf3HardwareInterface::on_init(
     const hardware_interface::HardwareInfo & info)
   {
@@ -22,15 +23,16 @@ namespace gf3_hardware
       return CallbackReturn::ERROR;
     }
 
-    CAN_ = std::make_shared<hw_can_bridge>();
-    CAN_->test();
+    CAN_ = std::make_shared<CanBridge>();
 
     // START: This part here is for exemplary purposes - Please do not copy to your production code
-    hw_start_sec_ = stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
-    hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
-    hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
+    // hw_start_sec_ = stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
+    // hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
+    // hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
     // END: This part here is for exemplary purposes - Please do not copy to your production code
+    
     hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+    prev_hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
     for (const hardware_interface::ComponentInfo & joint : info_.joints)
@@ -79,22 +81,23 @@ namespace gf3_hardware
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // START: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(
-      rclcpp::get_logger("Gf3HardwareInterface"), "Configuring ...please wait...");
+    // RCLCPP_INFO(
+    //   rclcpp::get_logger("Gf3HardwareInterface"), "Configuring ...please wait...");
 
-    for (int i = 0; i < hw_start_sec_; i++)
-    {
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      RCLCPP_INFO(
-        rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
-        hw_start_sec_ - i);
-    }
+    // for (int i = 0; i < hw_start_sec_; i++)
+    // {
+    //   rclcpp::sleep_for(std::chrono::seconds(1));
+    //   RCLCPP_INFO(
+    //     rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
+    //     hw_start_sec_ - i);
+    // }
     // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     // reset values always when configuring hardware
     for (uint i = 0; i < hw_states_.size(); i++)
     {
       hw_states_[i] = 0;
+      prev_hw_states_[i] = 0;
       hw_commands_[i] = 0;
     }
 
@@ -133,16 +136,16 @@ namespace gf3_hardware
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // START: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(
-      rclcpp::get_logger("Gf3HardwareInterface"), "Activating ...please wait...");
+    // RCLCPP_INFO(
+    //   rclcpp::get_logger("Gf3HardwareInterface"), "Activating ...please wait...");
 
-    for (int i = 0; i < hw_start_sec_; i++)
-    {
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      RCLCPP_INFO(
-        rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
-        hw_start_sec_ - i);
-    }
+    // for (int i = 0; i < hw_start_sec_; i++)
+    // {
+    //   rclcpp::sleep_for(std::chrono::seconds(1));
+    //   RCLCPP_INFO(
+    //     rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
+    //     hw_start_sec_ - i);
+    // }
     // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     // command and state should be equal when starting
@@ -160,18 +163,18 @@ namespace gf3_hardware
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // START: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(
-      rclcpp::get_logger("Gf3HardwareInterface"), "Deactivating ...please wait...");
+    // RCLCPP_INFO(
+    //   rclcpp::get_logger("Gf3HardwareInterface"), "Deactivating ...please wait...");
 
-    for (int i = 0; i < hw_stop_sec_; i++)
-    {
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      RCLCPP_INFO(
-        rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
-        hw_stop_sec_ - i);
-    }
+    // for (int i = 0; i < hw_stop_sec_; i++)
+    // {
+    //   rclcpp::sleep_for(std::chrono::seconds(1));
+    //   RCLCPP_INFO(
+    //     rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
+    //     hw_stop_sec_ - i);
+    // }
 
-    RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Successfully deactivated!");
+    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Successfully deactivated!");
     // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     return CallbackReturn::SUCCESS;
@@ -179,18 +182,52 @@ namespace gf3_hardware
 
   hardware_interface::return_type Gf3HardwareInterface::read()
   {
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Reading...");
+    // for (uint8_t idx = 0 ;idx < info_.joints.size(); idx++){
+    for (uint8_t idx = 0 ;idx < 3; idx++){
+      auto reply = CAN_->pub_command(ARM_->getPosition(motor_ID[idx]));
+      // hw_states_[0] =((reply[6] & 0xFF ) + ((reply[7] << 8) & 0xFF00)) / 100 * M_PI / 180 / 36;
+      if (idx == 0){ // V1 com protocol
+        int64_t raw_position = ((reply[1] & 0xFF ) +
+                                ((reply[2] << 8) & 0xFF'00) +
+                                ((reply[3] << 16) & 0xFF'00'00) +
+                                ((reply[4] << 24) & 0xFF'00'00'00) +
+                                ((reply[5] << 32) & 0xFF'00'00'00'00) +
+                                ((reply[6] << 40) & 0xFF'00'00'00'00'00) +
+                                ((reply[7] << 48) & 0xFF'00'00'00'00'00'00));
 
-    for (uint i = 0; i < hw_states_.size(); i++)
-    {
-      // Simulate RRBot's movement
-      hw_states_[i] = hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
-      RCLCPP_INFO(
-        rclcpp::get_logger("Gf3HardwareInterface"), "Got state %.5f for joint %d!",
-        hw_states_[i], i);
+        if (reply[6] == 0xFF && reply[7] == 0xFF){
+          raw_position = (raw_position) - 0x00'00'00'FF'FF'FF'FF - 0x00'00'00'00'00'00'01;
+        }
+        hw_states_[idx] =(raw_position / 100 * M_PI / 180 / 36);
+      }
+      else // V3 com protocol
+      {
+        int32_t raw_position = ((reply[4] & 0xFF) +
+                                ((reply[5] << 8) & 0xFF'00) +
+                                ((reply[6] << 16) & 0xFF'00'00) +
+                                ((reply[7] << 24) & 0xFF'00'00'00));
+
+        if (reply[7] == 0xFF){
+          raw_position = (raw_position) - 0x00'00'00'00'00'FF'FF - 0x00'00'00'00'00'00'01;
+        }
+        hw_states_[idx] =(raw_position / 100 * M_PI / 180 / 9);
+      }
     }
-    RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Joints successfully read!");
+
+    
+    
+    // START: This part here is for exemplary purposes - Please do not copy to your production code
+    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Reading...");
+
+    // for (uint i = 0; i < hw_states_.size(); i++)
+    // {
+    //   // Simulate RRBot's movement
+    //   hw_states_[i] = hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
+    //   RCLCPP_INFO(
+    //     rclcpp::get_logger("Gf3HardwareInterface"), "Got state %.5f for joint %d!",
+    //     hw_states_[i], i);
+    // }
+    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Joints successfully read!");
     // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     return hardware_interface::return_type::OK;
@@ -199,19 +236,34 @@ namespace gf3_hardware
   hardware_interface::return_type Gf3HardwareInterface::write()
   {
     // START: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Writing...");
+    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Writing...");
 
-    for (uint i = 0; i < hw_commands_.size(); i++)
-    {
-      // Simulate sending commands to the hardware
-      RCLCPP_INFO(
-        rclcpp::get_logger("Gf3HardwareInterface"), "Got command %.5f for joint %d!",
-        hw_commands_[i], i);
-    }
-    RCLCPP_INFO(
-      rclcpp::get_logger("Gf3HardwareInterface"), "Joints successfully written!");
+    // for (uint i = 0; i < hw_commands_.size(); i++)
+    // {
+    //   // Simulate sending commands to the hardware
+    //   RCLCPP_INFO(
+    //     rclcpp::get_logger("Gf3HardwareInterface"), "Got command %.5f for joint %d!",
+    //     hw_commands_[i], i);
+    // }
+    // RCLCPP_INFO(
+    //   rclcpp::get_logger("Gf3HardwareInterface"), "Joints successfully written!");
     // END: This part here is for exemplary purposes - Please do not copy to your production code
-
+    int ratio = 0;
+    for (uint8_t idx = 0 ;idx < 3; idx++){
+      if (idx == 0) ratio = 36; else ratio = 9;
+      int32_t raw_command = hw_commands_[idx] * 100 / M_PI * 180 * ratio;
+      std::array<uint8_t, 8UL> command;
+      command[0] = gf3_hardware::Commands::Myactuator::SET_POS_COMMAND;
+      command[1] = 0x00;
+      command[2] = 0x00;
+      command[3] = 0x00;
+      command[4] = raw_command & 0x00;
+      command[5] = (raw_command >> 8) & 0xFF;
+      command[6] = (raw_command >> 16) & 0xFF;
+      command[7] = (raw_command >> 24) & 0xFF;
+      // std::cout << "writting" << std::endl;
+      CAN_->pub_command(ARM_->setPosition(motor_ID[idx], command));
+    }
     return hardware_interface::return_type::OK;
   }
 

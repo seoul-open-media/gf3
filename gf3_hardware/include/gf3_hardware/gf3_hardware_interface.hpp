@@ -11,7 +11,8 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "can_msgs/msg/frame.hpp"
-#include "gf3_hardware/hw_can_bridge.hpp"
+#include "gf3_hardware/CanBridge.hpp"
+#include "gf3_hardware/myactuator.hpp"
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -61,11 +62,12 @@ namespace gf3_hardware
     // // rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr command_publisher_;
     // uint8_t can_data_[8] = { 0xa2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
     // uint32_t can_id_;
-    std::shared_ptr<hw_can_bridge> CAN_;
-
-
     std::vector<double> hw_commands_;
-    std::vector<double> hw_states_;
+    std::vector<double> hw_states_, prev_hw_states_;
     
+    std::shared_ptr<CanBridge> CAN_;
+    std::shared_ptr<Myactuator> ARM_;
+
+    const uint32_t motor_ID[3] ={0x141U, 0x142U, 0x143U};
   };
 }
