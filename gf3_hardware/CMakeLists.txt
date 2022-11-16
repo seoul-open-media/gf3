@@ -47,6 +47,19 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "JOINT_STATE_BROADCASTER_BUIL
 target_compile_definitions(${PROJECT_NAME} PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 pluginlib_export_plugin_description_file(hardware_interface gf3_hardware.xml)
 
+add_executable(mecanum_control src/mecanum_control.cpp)
+ament_target_dependencies(mecanum_control ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+target_include_directories(mecanum_control PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(mecanum_control PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+install(
+        TARGETS mecanum_control
+        DESTINATION lib/${PROJECT_NAME}
+)
+
 install(
         TARGETS ${PROJECT_NAME}
         DESTINATION lib
