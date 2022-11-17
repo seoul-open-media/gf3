@@ -17,6 +17,9 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   std_msgs
   can_msgs
 )
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
 
 install(
   DIRECTORY config launch

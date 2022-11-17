@@ -69,7 +69,8 @@ void MecanumControl::can_reply_callback(const can_msgs::msg::Frame &msg)
       int index = std::distance(motor_id_, it);
       std::cout << "Reply from Index: " << index << "found" << std::endl;
   } else {
-      std::cout << "Not Found";
+      RCLCPP_INFO(rclcpp::get_logger("MecanumControl"), "not found...");
+
     }
   // int16_t raw_position = ((reply[1] & 0xFF ) +
   //                               ((reply[2] << 8) & 0xFF'00) +
