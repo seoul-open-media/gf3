@@ -4,7 +4,8 @@ namespace gf3_hardware
   const double WHEEL_RADIUS = 0.05;
   const double WHEEL_SEPARATION_WIDTH = 0.405;
   const double WHEEL_SEPARATION_LENGTH = 0.304;
-  const uint32_t motor_id_[2] = {0x001U, 0x002U}; // (FL - 0x001, M1), (RL - 0x001, M2), (FR - 0x002, M1), (RR - 0x002, M2)
+  const double ratio = 10.0;
+  const uint32_t motor_id_[2] = {0x001U, 0x002U}; // (FL - 0x002, M1), (RL - 0x002, M2), (FR - 0x001, M1), (RR - 0x001, M2)
 
 MecanumControl::MecanumControl()
 :Node("MecanumControl")
@@ -26,15 +27,20 @@ MecanumControl::~MecanumControl()
 
 void MecanumControl::cmd_vel_callback(const geometry_msgs::msg::Twist &msg){
   
+  // double wheel_front_left = (1/WHEEL_RADIUS) * (msg.linear.x - msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH)*msg.angular.z); 
   double wheel_front_left = (1/WHEEL_RADIUS) * (msg.linear.x - msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH)*msg.angular.z);
   double wheel_front_right = (1/WHEEL_RADIUS) * (msg.linear.x + msg.linear.y + (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH)*msg.angular.z);
   double wheel_rear_left = (1/WHEEL_RADIUS) * (msg.linear.x + msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH)*msg.angular.z);
   double wheel_rear_right = (1/WHEEL_RADIUS) * (msg.linear.x - msg.linear.y + (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH)*msg.angular.z);
 
-  int16_t target_FL_rpm = wheel_front_left / (2 * M_PI) * 60;
-  int16_t target_FR_rpm = wheel_front_right / (2 * M_PI) * 60;
-  int16_t target_RL_rpm = wheel_rear_left / (2 * M_PI) * 60;
-  int16_t target_RR_rpm = wheel_rear_right / (2 * M_PI) * 60;
+  int16_t target_FL_rpm = wheel_front_left / (2 * M_PI) * 60 * ratio;
+  int16_t target_FR_rpm = wheel_front_right / (2 * M_PI) * 60 * ratio;
+  int16_t target_RL_rpm = wheel_rear_left / (2 * M_PI) * 60 * ratio;
+  int16_t target_RR_rpm = wheel_rear_right / (2 * M_PI) * 60 * ratio;
+  //   int16_t target_FL_rpm =10;
+  // int16_t target_FR_rpm = 10;
+  // int16_t target_RL_rpm = 10;
+  // int16_t target_RR_rpm = 10;
 
   can_msgs::msg::Frame command;
   command.data[0] = 0xCF;
@@ -44,18 +50,18 @@ void MecanumControl::cmd_vel_callback(const geometry_msgs::msg::Twist &msg){
 
   for (uint8_t idx = 0 ;idx < 2; idx++){
       
-      if (idx == 0){ // FL, RL
+      if (idx == 1){ // FL, RL
         command.id = motor_id_[idx];
         command.data[2] = target_FL_rpm & 0xFF; // for FL(M1)
         command.data[3] = (target_FL_rpm >> 8) & 0xFF;
         command.data[5] = target_RL_rpm & 0xFF; // for RL(M2)
         command.data[6] = (target_RL_rpm >> 8) & 0xFF;
       }
-      if (idx == 1){ // FR, RR
+      if (idx == 0){ // FR, RR
         command.id = motor_id_[idx];
-        command.data[2] = target_FR_rpm & 0xFF; // for FL(M1)
+        command.data[2] = target_FR_rpm & 0xFF; // for FR(M1)
         command.data[3] = (target_FR_rpm >> 8) & 0xFF;
-        command.data[5] = target_RR_rpm & 0xFF; // for RL(M2)
+        command.data[5] = target_RR_rpm & 0xFF; // for RR(M2)
         command.data[6] = (target_RR_rpm >> 8) & 0xFF;
       }
       can_command_publisher_->publish(command);
