@@ -78,8 +78,31 @@ void MecanumControl::can_reply_callback(const can_msgs::msg::Frame &msg)
       RCLCPP_INFO(rclcpp::get_logger("MecanumControl"), "not found...");
 
     }
-  // int16_t raw_position = ((reply[1] & 0xFF ) +
-  //                               ((reply[2] << 8) & 0xFF'00) +
+  // c4(196)-motor1, c9(201)-motor2 
+  if (msg.id == 0x001U){ // Right controller
+    std::cout <<"ID 1 received" <<std::endl;
+    if (msg.data[0] == 0xC4U){ // FR
+
+    }
+    if (msg.data[0] == 0xC9U){ // RR
+
+    }
+  }
+  else if(msg.id == 0x002U){ // Left controller
+    std::cout <<"ID 2 received" <<std::endl;
+    if (msg.data[0] == 0xC4U){ // FL
+
+    }
+    if (msg.data[0] == 0xC9U){ // RL
+
+    }
+  }
+  int16_t rpm = msg.data[2] + ((msg.data[3] << 8) & 0xFF'00);
+ 
+  int16_t received_FL_rpm_ = wheel_front_left / (2 * M_PI) * 60 * ratio;
+  int16_t received_FR_rpm_ = wheel_front_right / (2 * M_PI) * 60 * ratio;
+  int16_t received_RL_rpm_ = wheel_rear_left / (2 * M_PI) * 60 * ratio;
+  int16_t received_RR_rpm_ = wheel_rear_right / (2 * M_PI) * 60 * ratio;
   
 }
 
