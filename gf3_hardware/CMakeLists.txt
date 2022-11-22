@@ -17,6 +17,9 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   hardware_interface
   pluginlib
   rclcpp_lifecycle
+  nav_msgs
+  tf2
+  tf2_ros
 )
 
 
