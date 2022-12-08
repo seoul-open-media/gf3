@@ -4,33 +4,50 @@ namespace gf3_hardware
   const double WHEEL_RADIUS = 0.05;
   const double WHEEL_SEPARATION_WIDTH = 0.405;
   const double WHEEL_SEPARATION_LENGTH = 0.304;
+  const double ODOM_LINEAR_CALIBRAION_FACTOR = 1.22;
+  const double ODOM_ANGULAR_CALIBRAION_FACTOR = 2.278;
   const double ratio = 10.0;
   const uint32_t motor_id_[2] = {0x001U, 0x002U}; // (FL - 0x002, M1), (RL - 0x002, M2), (FR - 0x001, M1), (RR - 0x001, M2)
   const uint32_t motor_reply_id_[2] = {0x701U, 0x702U}; // (FL - 0x002, M1), (RL - 0x002, M2), (FR - 0x001, M1), (RR - 0x001, M2)
 
 MecanumControl::MecanumControl()
 :Node("MecanumControl"),
-received_FL_w_(0),
-received_FR_w_(0),
-received_RL_w_(0),
-received_RR_w_(0),
-is_FL_received_(false),
-is_FR_received_(false),
-is_RL_received_(false),
-is_RR_received_(false),
-x_(0),
-y_(0),
-th_(0),
+received_FL_w_(0), received_FR_w_(0), received_RL_w_(0), received_RR_w_(0),
+is_FL_received_(false), is_FR_received_(false), is_RL_received_(false), is_RR_received_(false),
+x_(0), y_(0), th_(0),
 prev_time_(rclcpp::Clock(RCL_ROS_TIME).now().seconds())
 {
+  // init_motor();
+  m1_command_.data[0] = 0xCF;
+  m1_command_.data[1] = 0x01; // M1 enable
+  m1_command_.data[4] = 0x01; // M2 enable
+  m1_command_.data[7] = 0x07; // set reply type
+
+  m1_command_.id = motor_id_[1];
+  m1_command_.data[2] = 0x00; // for FL(M1)
+  m1_command_.data[3] = 0x00;
+  m1_command_.data[5] = 0x00; // for RL(M2)
+  m1_command_.data[6] = 0x00;
+  
+  m2_command_.data[0] = 0xCF;
+  m2_command_.data[1] = 0x01; // M1 enable
+  m2_command_.data[4] = 0x01; // M2 enable
+  m2_command_.data[7] = 0x07; // set reply type
+
+  m2_command_.id = motor_id_[0];
+  m2_command_.data[2] = 0x00; // for FR(M1)
+  m2_command_.data[3] = 0x00;
+  m2_command_.data[5] = 0x00; // for RR(M2)
+  m2_command_.data[6] = 0x00;
+
   can_state_subscription_ = this->create_subscription<can_msgs::msg::Frame>(
     "can_feedback", 1, std::bind(&MecanumControl::can_reply_callback, this, _1));
   cmd_vel_subscription_ = this->create_subscription<geometry_msgs::msg::Twist>(
     "cmd_vel", 1, std::bind(&MecanumControl::cmd_vel_callback, this, _1));
   can_command_publisher_ = this->create_publisher<can_msgs::msg::Frame>("can_command", 10);
   odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
-  tf_broadcaster_ =
-      std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+  tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+
   
 }
 
@@ -55,15 +72,6 @@ void MecanumControl::cmd_vel_callback(const geometry_msgs::msg::Twist &msg){
   // int16_t target_FR_rpm = 10;
   // int16_t target_RL_rpm = 10;
   // int16_t target_RR_rpm = 10;
-  m1_command_.data[0] = 0xCF;
-  m1_command_.data[1] = 0x01; // M1 enable
-  m1_command_.data[4] = 0x01; // M2 enable
-  m1_command_.data[7] = 0x07; // set reply type
-  
-  m2_command_.data[0] = 0xCF;
-  m2_command_.data[1] = 0x01; // M1 enable
-  m2_command_.data[4] = 0x01; // M2 enable
-  m2_command_.data[7] = 0x07; // set reply type
 
     // FL, RL
   m1_command_.id = motor_id_[1];
@@ -132,12 +140,13 @@ int MecanumControl::MainLoop()
   can_command_publisher_->publish(m2_command_);
   rclcpp::spin_some(shared_from_this());
   if (is_FL_received_ == true && is_FR_received_ == true &&is_RL_received_ == true &&is_RR_received_ == true){ // if All w are received
-    double vx = (received_FR_w_ + received_FL_w_ + received_RL_w_ + received_RR_w_) * WHEEL_RADIUS / 4 ;
-    double vy = (received_FR_w_ - received_FL_w_ + received_RL_w_ - received_RR_w_) * WHEEL_RADIUS / 4 ;
-    double vth = (received_FR_w_ - received_FL_w_ - received_RL_w_ + received_RR_w_) * WHEEL_RADIUS / (4 * (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH));
+    double vx = (received_FR_w_ + received_FL_w_ + received_RL_w_ + received_RR_w_) * WHEEL_RADIUS / 4 * ODOM_LINEAR_CALIBRAION_FACTOR;
+    double vy = (received_FR_w_ - received_FL_w_ + received_RL_w_ - received_RR_w_) * WHEEL_RADIUS / 4 * ODOM_LINEAR_CALIBRAION_FACTOR;
+    double vth = (received_FR_w_ - received_FL_w_ - received_RL_w_ + received_RR_w_) * WHEEL_RADIUS / (4 * (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH)) * ODOM_ANGULAR_CALIBRAION_FACTOR;
     
-    double dt = rclcpp::Clock(RCL_ROS_TIME).now().seconds() - prev_time_;
-    prev_time_ = rclcpp::Clock(RCL_ROS_TIME).now().seconds();
+    double current_time = rclcpp::Clock(RCL_ROS_TIME).now().seconds();;
+    double dt = current_time - prev_time_;
+    prev_time_ = current_time;
     // RCLCPP_INFO(rclcpp::get_logger("MecanumControl"), "dt calculated: %f",dt);
     double delta_x = ((vx * cos(th_) - vy * sin(th_)) * dt);
     double delta_y = ((vx * sin(th_) + vy * cos(th_)) * dt);
@@ -156,7 +165,14 @@ int MecanumControl::MainLoop()
 
     odom_.pose.pose.position.x = x_;
     odom_.pose.pose.position.y = y_;
-    // odom_.pose.pose.orientation += th_;
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, th_);
+    odom_.pose.pose.orientation.x = q.x();
+    odom_.pose.pose.orientation.y = q.y();
+    odom_.pose.pose.orientation.z = q.z();
+    odom_.pose.pose.orientation.w = q.w();
+
 
     odom_publisher_->publish(odom_);
    
@@ -176,12 +192,8 @@ int MecanumControl::MainLoop()
     // For the same reason, turtle can only rotate around one axis
     // and this why we set rotation in x and y to 0 and obtain
     // rotation in z axis from the message
-    tf2::Quaternion q;
-    q.setRPY(0, 0, th_);
-    t.transform.rotation.x = q.x();
-    t.transform.rotation.y = q.y();
-    t.transform.rotation.z = q.z();
-    t.transform.rotation.w = q.w();
+    
+    t.transform.rotation = odom_.pose.pose.orientation;
 
     // Send the transformation
     tf_broadcaster_->sendTransform(t);
