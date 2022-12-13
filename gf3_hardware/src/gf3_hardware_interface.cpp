@@ -183,7 +183,7 @@ namespace gf3_hardware
         if (reply[7] == 0xFF){
           raw_position = (raw_position) - 0x00'00'00'FF'FF'FF'FF - 0x00'00'00'00'00'00'01;
         }
-        hw_states_[idx] =(raw_position / 100 * M_PI / 180);
+        hw_states_[idx] =-(raw_position / 100 * M_PI / 180);
       }
     }
 
@@ -230,7 +230,11 @@ namespace gf3_hardware
       command[0] = 0xA4;
       command[1] = 0x00;
       command[2] = 0xB0;
-      if (idx == 0) command[3] = 0x06; else command[3] = 0x00;
+      if (idx == 0) command[3] = 0x06;
+      else{
+        command[3] = 0x00;
+        raw_command = -raw_command;
+      }
       // command[3] = 0x00;
       command[4] = raw_command & 0x00;
       command[5] = (raw_command >> 8) & 0xFF;
