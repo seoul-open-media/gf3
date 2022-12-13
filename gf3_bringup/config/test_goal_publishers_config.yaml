@@ -2,37 +2,36 @@ publisher_forward_position_controller:
   ros__parameters:
 
     controller_name: "forward_position_controller"
-    wait_sec_between_publish: 5
+    wait_sec_between_publish: 3
 
-    goal_names: ["pos1", "pos2", "pos3", "pos4"]
-    pos1: [0.785, 0.785, 0.785, 0.785, 0.785, 0.785]
-    pos2: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    pos3: [-0.785, -0.785, -0.785, -0.785, -0.785, -0.785]
-    pos4: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
+    goal_names: ["pos1", "pos2", "pos3", "pos4", "pos5", "pos6"]
+    pos1: [-1.57, 0.25, 0.0]
+    pos2: [-1.57, 1.03, 0.0]
+    pos3: [-1.57, -0.83, 0.0]
+    pos4: [-1.57, -0.83, 0.0]
+    pos5: [-1.57, -0.83, 3.14]
+    pos6: [-1.57, -0.83, -3.14]
+    pos6: [0.0, 0.25, 0.0]
 
 publisher_joint_trajectory_controller:
   ros__parameters:
 
-    controller_name: "joint_trajectory_controller"
+    controller_name: "position_trajectory_controller"
     wait_sec_between_publish: 6
     repeat_the_same_goal: 1 # useful to simulate continuous inputs
 
     goal_time_from_start: 3.0
     goal_names: ["pos1", "pos2", "pos3", "pos4"]
     pos1:
-      positions: [0.785, 0.785, 0.785, 0.785, 0.785, 0.785]
+      positions: [0.1, 0.0, 0.1]
     pos2:
-      positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      positions: [0.0, 0.0, 0.0]
     pos3:
-      positions: [-0.785, -0.785, -0.785, -0.785, -0.785, -0.785]
+      positions: [-0.1, 0.0, -0.1]
     pos4:
-      positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      positions: [0.0, 0.0, 0.0]
 
     joints:
-      - joint1
-      - joint2
-      - joint3
-      - joint4
-      - joint5
-      - joint6
+      - shoulder_1_shoulder_2
+      - shoulder_2_shoulder_3
+      - shoulder_3_upper_arm

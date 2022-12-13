@@ -33,7 +33,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="gf3_bringup",
+            default_value="gf3_description",
             description="Description package with robot URDF/xacro files. Usually the argument \
         is not set, it enables use of a custom description.",
         )
@@ -41,7 +41,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
-            default_value="gf3.urdf.xacro",
+            default_value="gf3.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
@@ -57,7 +57,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "use_mock_hardware",
-            default_value="true",
+            default_value="false",
             description="Start robot with fake hardware mirroring command to its states.",
         )
     )
@@ -73,7 +73,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "robot_controller",
             default_value="forward_position_controller",
-            choices=["forward_position_controller", "joint_trajectory_controller"],
+            choices=["forward_position_controller", "position_trajectory_controller"],
             description="Robot controller to start.",
         )
     )

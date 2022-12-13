@@ -80,20 +80,6 @@ namespace gf3_hardware
   CallbackReturn Gf3HardwareInterface::on_configure(
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    // RCLCPP_INFO(
-    //   rclcpp::get_logger("Gf3HardwareInterface"), "Configuring ...please wait...");
-
-    // for (int i = 0; i < hw_start_sec_; i++)
-    // {
-    //   rclcpp::sleep_for(std::chrono::seconds(1));
-    //   RCLCPP_INFO(
-    //     rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
-    //     hw_start_sec_ - i);
-    // }
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
-
-    // reset values always when configuring hardware
     for (uint i = 0; i < hw_states_.size(); i++)
     {
       hw_states_[i] = 0;
@@ -135,19 +121,6 @@ namespace gf3_hardware
   CallbackReturn Gf3HardwareInterface::on_activate(
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    // RCLCPP_INFO(
-    //   rclcpp::get_logger("Gf3HardwareInterface"), "Activating ...please wait...");
-
-    // for (int i = 0; i < hw_start_sec_; i++)
-    // {
-    //   rclcpp::sleep_for(std::chrono::seconds(1));
-    //   RCLCPP_INFO(
-    //     rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
-    //     hw_start_sec_ - i);
-    // }
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
-
     // command and state should be equal when starting
     for (uint i = 0; i < hw_states_.size(); i++)
     {
@@ -202,15 +175,15 @@ namespace gf3_hardware
       }
       else // V3 com protocol
       {
-        int32_t raw_position = ((reply[4] & 0xFF) +
+        int64_t raw_position = ((reply[4] & 0xFF) +
                                 ((reply[5] << 8) & 0xFF'00) +
                                 ((reply[6] << 16) & 0xFF'00'00) +
                                 ((reply[7] << 24) & 0xFF'00'00'00));
 
         if (reply[7] == 0xFF){
-          raw_position = (raw_position) - 0x00'00'00'00'00'FF'FF - 0x00'00'00'00'00'00'01;
+          raw_position = (raw_position) - 0x00'00'00'FF'FF'FF'FF - 0x00'00'00'00'00'00'01;
         }
-        hw_states_[idx] =(raw_position / 100 * M_PI / 180 / 9);
+        hw_states_[idx] =(raw_position / 100 * M_PI / 180);
       }
     }
 
@@ -250,13 +223,15 @@ namespace gf3_hardware
     // END: This part here is for exemplary purposes - Please do not copy to your production code
     int ratio = 0;
     for (uint8_t idx = 0 ;idx < 3; idx++){
-      if (idx == 0) ratio = 36; else ratio = 9;
+      if (idx == 0) ratio = 36; else ratio = 1;
       int32_t raw_command = hw_commands_[idx] * 100 / M_PI * 180 * ratio;
       std::array<uint8_t, 8UL> command;
-      command[0] = gf3_hardware::Commands::Myactuator::SET_POS_COMMAND;
+      // command[0] = gf3_hardware::Commands::Myactuator::SET_POS_COMMAND;
+      command[0] = 0xA4;
       command[1] = 0x00;
-      command[2] = 0x00;
-      command[3] = 0x00;
+      command[2] = 0xB0;
+      if (idx == 0) command[3] = 0x06; else command[3] = 0x00;
+      // command[3] = 0x00;
       command[4] = raw_command & 0x00;
       command[5] = (raw_command >> 8) & 0xFF;
       command[6] = (raw_command >> 16) & 0xFF;
