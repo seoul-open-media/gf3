@@ -4,8 +4,8 @@ namespace gf3_hardware
   const double WHEEL_RADIUS = 0.05;
   const double WHEEL_SEPARATION_WIDTH = 0.405;
   const double WHEEL_SEPARATION_LENGTH = 0.304;
-  const double ODOM_LINEAR_CALIBRAION_FACTOR = 1.22;
-  const double ODOM_ANGULAR_CALIBRAION_FACTOR = 2.278;
+  const double ODOM_LINEAR_CALIBRAION_FACTOR = 1.12;
+  const double ODOM_ANGULAR_CALIBRAION_FACTOR = 2.1;
   const double ratio = 10.0;
   const uint32_t motor_id_[2] = {0x001U, 0x002U}; // (FL - 0x002, M1), (RL - 0x002, M2), (FR - 0x001, M1), (RR - 0x001, M2)
   const uint32_t motor_reply_id_[2] = {0x701U, 0x702U}; // (FL - 0x002, M1), (RL - 0x002, M2), (FR - 0x001, M1), (RR - 0x001, M2)
