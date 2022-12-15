@@ -25,12 +25,6 @@ namespace gf3_hardware
 
     CAN_ = std::make_shared<CanBridge>();
 
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    // hw_start_sec_ = stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
-    // hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
-    // hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
-    
     hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     prev_hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
@@ -85,6 +79,7 @@ namespace gf3_hardware
       hw_states_[i] = 0;
       prev_hw_states_[i] = 0;
       hw_commands_[i] = 0;
+      if(i==1) hw_states_ [i] = -0.25;
     }
 
     RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Successfully configured!");
@@ -135,20 +130,6 @@ namespace gf3_hardware
   CallbackReturn Gf3HardwareInterface::on_deactivate(
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    // RCLCPP_INFO(
-    //   rclcpp::get_logger("Gf3HardwareInterface"), "Deactivating ...please wait...");
-
-    // for (int i = 0; i < hw_stop_sec_; i++)
-    // {
-    //   rclcpp::sleep_for(std::chrono::seconds(1));
-    //   RCLCPP_INFO(
-    //     rclcpp::get_logger("Gf3HardwareInterface"), "%.1f seconds left...",
-    //     hw_stop_sec_ - i);
-    // }
-
-    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Successfully deactivated!");
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     return CallbackReturn::SUCCESS;
   }
@@ -187,50 +168,21 @@ namespace gf3_hardware
       }
     }
 
-    
-    
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Reading...");
-
-    // for (uint i = 0; i < hw_states_.size(); i++)
-    // {
-    //   // Simulate RRBot's movement
-    //   hw_states_[i] = hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
-    //   RCLCPP_INFO(
-    //     rclcpp::get_logger("Gf3HardwareInterface"), "Got state %.5f for joint %d!",
-    //     hw_states_[i], i);
-    // }
-    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Joints successfully read!");
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
-
     return hardware_interface::return_type::OK;
   }
 
   hardware_interface::return_type Gf3HardwareInterface::write()
   {
-    // START: This part here is for exemplary purposes - Please do not copy to your production code
-    // RCLCPP_INFO(rclcpp::get_logger("Gf3HardwareInterface"), "Writing...");
-
-    // for (uint i = 0; i < hw_commands_.size(); i++)
-    // {
-    //   // Simulate sending commands to the hardware
-    //   RCLCPP_INFO(
-    //     rclcpp::get_logger("Gf3HardwareInterface"), "Got command %.5f for joint %d!",
-    //     hw_commands_[i], i);
-    // }
-    // RCLCPP_INFO(
-    //   rclcpp::get_logger("Gf3HardwareInterface"), "Joints successfully written!");
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
     int ratio = 0;
     for (uint8_t idx = 0 ;idx < 3; idx++){
       if (idx == 0) ratio = 36; else ratio = 1;
       int32_t raw_command = hw_commands_[idx] * 100 / M_PI * 180 * ratio;
       std::array<uint8_t, 8UL> command;
-      // command[0] = gf3_hardware::Commands::Myactuator::SET_POS_COMMAND;
-      command[0] = 0xA4;
+      // command[0] = gf3_hardware::Commands::Myactuator::SET_POS_COMMAND;  // default position command
+      command[0] = 0xA4; // position command with velocity limit
       command[1] = 0x00;
-      command[2] = 0xB0;
-      if (idx == 0) command[3] = 0x06;
+      command[2] = 0x09;
+      if (idx == 0) command[3] = 0x04;
       else{
         command[3] = 0x00;
         raw_command = -raw_command;
