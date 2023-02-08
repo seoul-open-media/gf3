@@ -15,18 +15,23 @@ controller_manager:
 forward_position_controller:
   ros__parameters:
     joints:
-      - shoulder_1_shoulder_2
-      - shoulder_2_shoulder_3
-      - shoulder_3_upper_arm
+      - shoulder_1-2
+      - shoulder_2-3
+      - shoulder_3-upper
+      - upper-elbow
+      - elbow-lower
     interface_name: position
 
 
 position_trajectory_controller:
   ros__parameters:
     joints:
-    - shoulder_1_shoulder_2
-    - shoulder_2_shoulder_3
-    - shoulder_3_upper_arm
+    - shoulder_1-2
+    - shoulder_2-3
+    - shoulder_3-upper
+    - upper-elbow
+    - elbow-lower
+
 
     command_interfaces:
       - position
@@ -34,10 +39,10 @@ position_trajectory_controller:
     state_interfaces:
       - position
 
-    state_publish_rate: 200.0 # Defaults to 50
+    state_publish_rate: 50.0 # Defaults to 50
     action_monitor_rate: 20.0 # Defaults to 20
 
-    allow_partial_joints_goal: false # Defaults to false
+    allow_partial_joints_goal: true # Defaults to false
     open_loop_control: true
     allow_integration_in_goal_trajectories: true
     constraints:

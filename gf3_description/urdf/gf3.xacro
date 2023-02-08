@@ -3,7 +3,20 @@
 
     <xacro:arg name="prefix" default="" />
 
-    <xacro:include filename="gf3_temp_arm_core.xacro" />
+    
+
+    <xacro:include filename="gf3.urdf" />
+
+    <link name="base_link"/>
+    <joint name="base_link-base_link_inertia" type="fixed">
+      <parent link="base_link" />
+      <child link="base_link_inertia" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+
+
+
     <xacro:include filename="ros2_control.xacro" />
     <xacro:rrbot_ros2_control
     name="GF3" prefix="$(arg prefix)" />

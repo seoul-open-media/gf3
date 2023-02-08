@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: gf3_description
+    relative_path: urdf/gf3.xacro
+  srdf:
+    relative_path: config/robot.srdf
+  package_settings:
+    author_name: Jinseok Kim
+    author_email: jinseok.kim970@gmail.com
+    generated_timestamp: 1675328357

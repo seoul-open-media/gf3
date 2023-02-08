@@ -1,0 +1,8 @@
+# Default initial positions for robot's ros2_control fake system
+
+initial_positions:
+  elbow-lower: 0
+  shoulder_1-2: 0
+  shoulder_2-3: 0
+  shoulder_3-upper: 0
+  upper-elbow: 0

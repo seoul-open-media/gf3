@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="gf3_description">
+  <link
+    name="base_link_inertia">
+    <inertial>
+      <origin
+        xyz="0 5.48172618408671E-16 -0.35134261017473"
+        rpy="0 0 0" />
+      <mass
+        value="16.9761371669412" />
+      <inertia
+        ixx="0.813270923018946"
+        ixy="5.27371183290001E-19"
+        ixz="-9.25096626915597E-18"
+        iyy="0.69516527126524"
+        iyz="3.46965806395557E-17"
+        izz="0.136435460379323" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="shoulder_1">
+    <inertial>
+      <origin
+        xyz="4.15109526463731E-05 -0.00151873491296331 0.0381313948499769"
+        rpy="0 0 0" />
+      <mass
+        value="0.428555929741292" />
+      <inertia
+        ixx="0.000231584726559051"
+        ixy="-4.17406168537101E-07"
+        ixz="7.93686580474111E-12"
+        iyy="0.000409441715557106"
+        iyz="1.4205824220955E-06"
+        izz="0.000421632379981779" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/shoulder_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/shoulder_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base-shoulder_1"
+    type="fixed">
+    <origin
+      xyz="0.00500000000000006 -0.12 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link_inertia" />
+    <child
+      link="shoulder_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="shoulder_2">
+    <inertial>
+      <origin
+        xyz="1.29815794780441E-08 0.0677214498605619 0.0908949028025943"
+        rpy="0 0 0" />
+      <mass
+        value="0.801625883836926" />
+      <inertia
+        ixx="0.000822321765649176"
+        ixy="-2.33733168340494E-10"
+        ixz="1.17766859921903E-10"
+        iyy="0.00109491929411143"
+        iyz="-0.000123179902600518"
+        izz="0.00059930547133624" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/shoulder_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/shoulder_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shoulder_1-2"
+    type="revolute">
+    <origin
+      xyz="0 -0.0335000000000007 0.0550000000000001"
+      rpy="1.5707963267949 -1.5707963267949 0" />
+    <parent
+      link="shoulder_1" />
+    <child
+      link="shoulder_2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="shoulder_3">
+    <inertial>
+      <origin
+        xyz="-0.00250797379435397 -8.9291262828084E-08 0.060791515377128"
+        rpy="0 0 0" />
+      <mass
+        value="0.78185390173963" />
+      <inertia
+        ixx="0.000942899609429054"
+        ixy="-9.96737983038072E-10"
+        ixz="9.65405681179317E-07"
+        iyy="0.000612349518620666"
+        iyz="-2.07329960000374E-09"
+        izz="0.000566930201617026" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/shoulder_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/shoulder_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shoulder_2-3"
+    type="revolute">
+    <origin
+      xyz="0 0.0575000000000003 0.100499999999688"
+      rpy="-1.5707963267949 0 3.14159265358979" />
+    <parent
+      link="shoulder_2" />
+    <child
+      link="shoulder_3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5236"
+      upper="1.5708"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="uppper_arm">
+    <inertial>
+      <origin
+        xyz="3.03470961214303E-05 -0.00260329348431185 0.265249566717338"
+        rpy="0 0 0" />
+      <mass
+        value="0.94446311895432" />
+      <inertia
+        ixx="0.00141756847846554"
+        ixy="4.80110751423539E-07"
+        ixz="6.17059833294479E-07"
+        iyy="0.00173651913261035"
+        iyz="8.56852305986466E-06"
+        izz="0.00065896347505381" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/uppper_arm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/uppper_arm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shoulder_3-upper"
+    type="revolute">
+    <origin
+      xyz="0.0154999999999974 0 0.0644999999998069"
+      rpy="1.5707963268061 -1.57076412595444 1.57079632678369" />
+    <parent
+      link="shoulder_3" />
+    <child
+      link="uppper_arm" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.5708"
+      upper="1.5708"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="elbow">
+    <inertial>
+      <origin
+        xyz="7.53810226428175E-06 0.0397326813909367 -0.0130566041120146"
+        rpy="0 0 0" />
+      <mass
+        value="0.126561920168368" />
+      <inertia
+        ixx="8.90363606192493E-05"
+        ixy="-1.84156669835628E-09"
+        ixz="-9.16169940384802E-08"
+        iyy="9.71842137884586E-05"
+        iyz="-4.73289234651734E-06"
+        izz="6.65282396157217E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/elbow.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/elbow.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="upper-elbow"
+    type="revolute">
+    <origin
+      xyz="0 0.0154999999919611 0.301500000000314"
+      rpy="1.5707963267949 0 -3.14156045274864" />
+    <parent
+      link="uppper_arm" />
+    <child
+      link="elbow" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.5708"
+      upper="1.5708"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="lower">
+    <inertial>
+      <origin
+        xyz="0 0 0.0604608993841892"
+        rpy="0 0 0" />
+      <mass
+        value="0.0736301593510934" />
+      <inertia
+        ixx="0.000212385916416804"
+        ixy="-2.39938196175855E-20"
+        ixz="3.58395744306094E-19"
+        iyy="0.000212385916416804"
+        iyz="2.81151185090475E-19"
+        izz="3.3410274855104E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/lower.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gf3_description/meshes/lower.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="elbow-lower"
+    type="revolute">
+    <origin
+      xyz="0 0.0943999999999983 -0.0164999999999973"
+      rpy="-1.5707963267949 0 0" />
+    <parent
+      link="elbow" />
+    <child
+      link="lower" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.5708"
+      upper="1.5708"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>

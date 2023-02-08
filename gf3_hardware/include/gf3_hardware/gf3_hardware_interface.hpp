@@ -43,10 +43,10 @@ namespace gf3_hardware
     CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
     
-    hardware_interface::return_type read() override;
+    hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
     
-    hardware_interface::return_type write() override;
+    hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
   private:
   // Parameters for the RRBot simulation
@@ -68,6 +68,6 @@ namespace gf3_hardware
     std::shared_ptr<CanBridge> CAN_;
     std::shared_ptr<Myactuator> ARM_;
 
-    const uint32_t motor_ID[3] ={0x141U, 0x142U, 0x143U};
+    const uint32_t motor_ID[4] ={0x141U, 0x142U, 0x143U, 0x144U};
   };
 }
