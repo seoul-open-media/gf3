@@ -76,13 +76,6 @@ namespace gf3_hardware
   CallbackReturn Gf3HardwareInterface::on_configure(
     const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    // for (uint i = 0; i < hw_states_.size(); i++)
-    // {
-    //   hw_states_[i] = 0;
-    //   prev_hw_states_[i] = 0;
-    //   hw_commands_[i] = 0;
-    //   if(i==1) hw_states_ [i] = -0.25;
-    // }
        for (uint i = 0; i < hw_states_.size(); i++)
     {
       hw_commands_[i] = hw_states_[i];
@@ -142,25 +135,8 @@ namespace gf3_hardware
 
   hardware_interface::return_type Gf3HardwareInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    // for (uint8_t idx = 0 ;idx < info_.joints.size(); idx++){
     for (uint8_t idx = 0; idx < 4; idx++){
       auto reply = CAN_->pub_command(ARM_->getPosition(motor_ID[idx]));
-      // hw_states_[0] =((reply[6] & 0xFF ) + ((reply[7] << 8) & 0xFF00)) / 100 * M_PI / 180 / 36;
-
-      // if (idx == 0){ // V1 com protocol
-      //   int64_t raw_position = ((reply[1] & 0xFF ) +
-      //                           ((reply[2] << 8) & 0xFF'00) +
-      //                           ((reply[3] << 16) & 0xFF'00'00) +
-      //                           ((reply[4] << 24) & 0xFF'00'00'00) +
-      //                           ((reply[5] << 32) & 0xFF'00'00'00'00) +
-      //                           ((reply[6] << 40) & 0xFF'00'00'00'00'00) +
-      //                           ((reply[7] << 48) & 0xFF'00'00'00'00'00'00));
-
-      //   if (reply[6] == 0xFF && reply[7] == 0xFF){
-      //     raw_position = (raw_position) - 0x00'00'00'FF'FF'FF'FF - 0x00'00'00'00'00'00'01;
-      //   }
-      //   hw_states_[idx] =(raw_position / 100 * M_PI / 180 / 36);
-      // }
 
       // V3 com protocol
       double raw_position = ((reply[4] & 0xFF) +
@@ -193,21 +169,11 @@ namespace gf3_hardware
   {
     int ratio = 1;
     for (uint8_t idx = 0 ;idx < 4; idx++){
-      // if (idx == 0) ratio = 36; else ratio = 1;
       int32_t raw_command = hw_commands_[idx]  / M_PI * 180 * ratio;
       std::array<uint8_t, 8UL> command;
-      // command[0] = gf3_hardware::Commands::Myactuator::SET_POS_COMMAND;  // default position command
       command[0] = 0xA5; // position command with velocity limit
       command[1] = 0x12;
       command[2] = 0x00;
-      // command[2] = 0x00;
-
-      // **** for V1 protocol ****
-      // if (idx == 0) command[3] = 0x04;
-      // else{
-      //   command[3] = 0x00;
-      //   raw_command = -raw_command;
-      // }
 
       if (idx == 1){
         raw_command -= 22.5;
