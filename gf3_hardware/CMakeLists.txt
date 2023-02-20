@@ -31,7 +31,8 @@ add_library(${PROJECT_NAME}
         SHARED
         src/gf3_hardware_interface.cpp
         src/CanBridge.cpp
-        src/myactuator.cpp)
+        src/myactuator.cpp
+        src/MoteusAPI.cpp)
 
 target_include_directories(
   ${PROJECT_NAME}
