@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MOTEUSAPI_H__
-#define MOTEUSAPI_H__
+// #ifndef MOTEUSAPI_H__
+// #define MOTEUSAPI_H__
 
 #include <algorithm>
 #include <chrono>
@@ -143,4 +143,4 @@ class MoteusAPI {
   // const unsigned long timeoutdelayus = 1000;
 };
 
-#endif  // MOTEUSAPI_H__
+// #endif  // MOTEUSAPI_H__

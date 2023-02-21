@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "MoteusAPI.h"
+#include "gf3_hardware/MoteusAPI.h"
 
 #include <errno.h>   // Error number definitions
 #include <fcntl.h>   // File control definitions
@@ -242,7 +242,7 @@ int MoteusAPI::OpenDev() {
   }
 
   // set baud to arbitrary value, it will get ignored by dev
-  speed_t brate = B115200;
+  speed_t brate = B921600;
 
   cfsetispeed(&toptions, brate);
   cfsetospeed(&toptions, brate);

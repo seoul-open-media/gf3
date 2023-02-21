@@ -13,6 +13,7 @@
 #include "can_msgs/msg/frame.hpp"
 #include "gf3_hardware/CanBridge.hpp"
 #include "gf3_hardware/myactuator.hpp"
+#include "gf3_hardware/MoteusAPI.h"
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -49,24 +50,15 @@ namespace gf3_hardware
     hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
   private:
-  // Parameters for the RRBot simulation
     double hw_start_sec_;
     double hw_stop_sec_;
     double hw_slowdown_;
-
-    // void state_callback(const can_msgs::msg::Frame & msg);
-    // int send_command(const can_msgs::msg::Frame & msg);
-
-    // // Set publisher and subscriber for command and feedback(state)
-    // // rclcpp::Subscription<can_msgs::msg::Frame>::SharedPtr state_subscription_;
-    // // rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr command_publisher_;
-    // uint8_t can_data_[8] = { 0xa2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-    // uint32_t can_id_;
     std::vector<double> hw_commands_;
     std::vector<double> hw_states_, prev_hw_states_;
     
-    std::shared_ptr<CanBridge> CAN_;
-    std::shared_ptr<Myactuator> ARM_;
+    std::shared_ptr<MoteusAPI> MOTEUS_;
+    // std::shared_ptr<CanBridge> CAN_;
+    // std::shared_ptr<Myactuator> ARM_;
 
     const uint32_t motor_ID[4] ={0x141U, 0x142U, 0x143U, 0x144U};
   };
